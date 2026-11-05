@@ -22,7 +22,7 @@ The demo competition is **Hacktoverse Algorithm Sprint — Demo**, with two medi
 1. **Shared Lab Rooms** — minimum interval partitioning / heap
 2. **Longest Segment with Target Sum** — prefix sums / hash map
 
-Participants solve both challenges directly in the browser editor; **no ZIP or file upload is required**. The organizer must start the competition before participants can join, and can end it at any time. Scheduled start/end dates and each participant's configured contest timer are enforced.
+**A timed coding competition:** solve two challenges on interval scheduling and prefix sums in the browser editor. Run your code and submit it for automatic evaluation against test cases; no ZIP or manual review is required. The organizer must start the competition before participants can join and can end it at any time. Scheduled start/end dates and each participant's configured contest timer are enforced.
 
 On a fresh database, sign in with the configured organizer account, create the event from **Organizer**, then add the two challenges and their test cases. The running local database is not included in this repository.
 
