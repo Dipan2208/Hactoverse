@@ -1,0 +1,99 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: "Inter", "Segoe UI", sans-serif;
+    background: #f4f6f9;
+    color: #222;
+}
+
+.rankings-page-container {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+}
+
+.rankings-page {
+    width: 100%;
+    max-width: 800px;
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+}
+
+.rankings-page h2 {
+    margin-bottom: 25px;
+    font-size: 26px;
+    font-weight: 700;
+}
+
+.rankings-table-wrapper {
+    overflow-x: auto;
+}
+
+.rankings-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 500px;
+}
+
+.rankings-table thead {
+    background: #f1f3f5;
+}
+
+.rankings-table th {
+    text-align: left;
+    padding: 14px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #555;
+}
+
+.rankings-table td {
+    padding: 16px;
+    border-top: 1px solid #eaeaea;
+    font-size: 14px;
+}
+
+.rankings-table tbody tr:hover {
+    background: #f9fafb;
+}
+
+.rank-cell {
+    font-weight: 700;
+    color: #111;
+    width: 80px;
+}
+
+.name-cell {
+    font-weight: 600;
+    color: #111;
+}
+
+.score-cell {
+    color: #2563eb;
+    font-weight: 600;
+}
+
+/* Highlight top 3 */
+.top-rank {
+    background: #fffbeb;
+}
+
+.top-rank:hover {
+    background: #fef3c7;
+}
+
+.rankings-empty-state {
+    padding: 40px;
+    text-align: center;
+    color: #777;
+    font-size: 15px;
+}
+
+@media (max-width: 768px) {
+    .rankings-page {
+        padding: 20px;
+    }
+}

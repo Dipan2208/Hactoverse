@@ -1,0 +1,93 @@
+body {
+    min-height: 100vh;
+    margin: 0;
+    padding-bottom: 48px;
+    background: var(--page-bg);
+    color: var(--text-primary);
+    font-family: 'DM Sans', system-ui, sans-serif;
+}
+
+.back-link {
+    display: block;
+    width: min(860px, calc(100% - 40px));
+    margin: 26px auto 16px;
+}
+
+.container {
+    width: min(860px, calc(100% - 40px));
+    margin: 0 auto;
+    padding: clamp(24px, 5vw, 42px);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    background: var(--surface);
+    color: var(--text-primary);
+    box-shadow: var(--shadow);
+}
+
+.container h2 {
+    margin: 0 0 8px;
+    color: var(--text-primary);
+    font: 700 clamp(24px, 4vw, 34px)/1.15 'Space Grotesk', sans-serif;
+}
+
+.problem-title {
+    margin: 0 0 16px;
+    color: var(--accent);
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.submission-help {
+    margin: 0 0 24px;
+    padding: 14px 16px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--surface-raised);
+    color: var(--text-muted);
+    font-size: 13px;
+    line-height: 1.65;
+}
+
+.container form {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+}
+
+.container input[type="file"] {
+    width: 100%;
+    padding: 14px;
+    border: 1px dashed var(--border);
+    border-radius: 11px;
+    background: var(--surface-raised);
+    color: var(--text-primary);
+    font-size: 13px;
+}
+
+.container button {
+    min-height: 44px;
+    padding: 0 18px;
+    border: 0;
+    border-radius: 10px;
+    background: #596fe7;
+    color: #fff;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.container button:hover {
+    background: #485ed6;
+}
+
+@media (max-width: 600px) {
+    .back-link,
+    .container {
+        width: calc(100% - 28px);
+    }
+
+    .container {
+        padding: 22px;
+    }
+}

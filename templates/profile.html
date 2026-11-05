@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hacktoverse | Profile</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='profile.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='portal.css') }}">
+</head>
+
+<body>
+    {% include '_portal_nav.html' %}
+    <a href="/home" class="back-link">&larr; Back to dashboard</a>
+    <div class="container">
+        <h2>Profile</h2>
+
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div class="profile-message" role="status">
+            {% for message in messages %}<p>{{ message }}</p>{% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        <form method="post">
+            <label for="name">Name:</label>
+            <input id="name" name="name" value="{{ user.name }}" required>
+
+            <label for="bio">Bio:</label>
+            <textarea id="bio" name="bio">{{ user.bio }}</textarea>
+
+            <label for="age">Age:</label>
+            <input id="age" name="age" value="{{ user.age }}">
+
+            <label for="gender">Gender:</label>
+            <input id="gender" name="gender" value="{{ user.gender }}">
+            <button type="submit">Save profile</button>
+        </form>
+    </div>
+</body>
+
+</html>

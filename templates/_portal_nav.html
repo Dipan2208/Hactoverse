@@ -1,0 +1,18 @@
+<nav class="portal-nav" aria-label="Main navigation">
+    <a class="portal-brand" href="/home">
+        <span class="portal-brand-mark" aria-hidden="true">H</span>
+        <span>Hacktoverse</span>
+    </a>
+    <div class="portal-links">
+        <a href="/home">Dashboard</a>
+        <a href="/events">Events</a>
+        <a href="/evaluation">My progress</a>
+        <a href="/profile">Profile</a>
+        {% if session.get("role") == "admin" %}
+        <a href="/admin">Organizer</a>
+        {% endif %}
+        <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch to dark theme">☾ Dark</button>
+        <a class="portal-logout" href="/logout">Log out</a>
+    </div>
+</nav>
+<script defer src="{{ url_for('static', filename='theme.js') }}"></script>

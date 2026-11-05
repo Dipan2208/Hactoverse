@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hacktoverse | Rankings</title>
+    <link rel="stylesheet" href="/static/rankings.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='portal.css') }}">
+</head>
+
+<body>
+    {% include '_portal_nav.html' %}
+    <div class="rankings-page-container">
+        <div class="rankings-page">
+            <a href="/events" class="back-link">&larr; Back to events</a>
+            <h2>Leaderboard</h2>
+
+            <div class="rankings-table-wrapper">
+                <table class="rankings-table">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Name</th>
+                            <th>Score</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for entry in leaderboard %}
+                        <tr class="{{ 'top-rank' if entry.rank <= 3 else '' }}">
+                            <td class="rank-cell">#{{ entry.rank }}</td>
+                            <td class="name-cell">{{ entry.name }}</td>
+                            <td class="score-cell">{{ entry.score }}</td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="3" class="rankings-empty-state">
+                                No rankings available yet
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,294 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Base */
+body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background: #0f0f0f;
+    color: #111;
+}
+
+/* Page wrapper */
+.page {
+    max-width: 1200px;
+    margin: auto;
+    padding: 32px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+}
+
+/* Header */
+.page-header h1 {
+    font-size: 32px;
+    font-weight: 700;
+}
+
+.page-header p {
+    margin-top: 6px;
+    font-size: 14px;
+    color: #777;
+}
+
+/* Panels */
+.panel {
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 24px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+}
+
+.panel-soft {
+    background: #f9f9f9;
+}
+
+.panel h2 {
+    font-size: 20px;
+    margin-bottom: 16px;
+}
+
+/* Form */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+label {
+    font-size: 13px;
+    color: #555;
+}
+
+input,
+textarea {
+    padding: 12px 14px;
+    border-radius: 8px;
+    border: 1.5px solid #ccc;
+    font-size: 14px;
+    outline: none;
+}
+
+input:focus,
+textarea:focus {
+    border-color: #000;
+}
+
+textarea {
+    resize: vertical;
+    min-height: 90px;
+}
+
+select {
+    padding: 12px 14px;
+    border-radius: 8px;
+    border: 1.5px solid #ccc;
+    font-size: 14px;
+    outline: none;
+    background: #fff;
+}
+
+.row-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+
+@media (max-width: 700px) {
+    .row-2 { grid-template-columns: 1fr; }
+}
+
+.mono {
+    font-family: "SFMono-Regular", Consolas, Menlo, monospace;
+    font-size: 13px;
+    min-height: 70px;
+}
+
+.hint {
+    font-weight: 400;
+    color: #999;
+    font-size: 12px;
+    text-transform: none;
+}
+
+.subheading {
+    margin-top: 10px;
+    font-size: 15px;
+    font-weight: 700;
+    color: #111;
+}
+
+#code-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.btn-tests {
+    background: #ffffff;
+    color: #2563eb;
+    border-color: #2563eb;
+}
+
+.btn-tests:hover {
+    background: #2563eb;
+    color: #ffffff;
+}
+
+/* Button */
+button {
+    margin-top: 8px;
+    padding: 13px;
+    border-radius: 10px;
+    border: none;
+    background: #111;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.15s ease;
+}
+
+button:hover {
+    transform: translateY(-1px);
+}
+
+/* Table */
+.table-wrapper {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+thead {
+    background: #111;
+    color: #fff;
+}
+
+th,
+td {
+    padding: 14px 16px;
+    text-align: left;
+    font-size: 14px;
+}
+
+th {
+    font-weight: 600;
+}
+
+tbody tr {
+    border-bottom: 1px solid #e5e5e5;
+}
+
+tbody tr:last-child {
+    border-bottom: none;
+}
+
+tbody tr:hover {
+    background: #f4f4f4;
+}
+
+/* Description column */
+.desc {
+    max-width: 520px;
+    line-height: 1.45;
+    color: #444;
+}
+
+/* Actions */
+.actions-col {
+    width: 170px;
+    text-align: center;
+}
+
+.actions {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* Action buttons */
+.btn {
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.15s ease;
+    border: 1px solid transparent;
+}
+
+/* Edit */
+.btn-edit {
+    background: #ffffff;
+    color: #111;
+    border-color: #111;
+}
+
+.btn-edit:hover {
+    background: #111;
+    color: #ffffff;
+}
+
+/* Delete */
+.btn-delete {
+    background: #ffffff;
+    color: #b91c1c;
+    border-color: #b91c1c;
+}
+
+.btn-delete:hover {
+    background: #b91c1c;
+    color: #ffffff;
+}
+
+/* Empty state */
+.empty {
+    text-align: center;
+    padding: 24px;
+    color: #777;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .desc {
+        max-width: 300px;
+    }
+}
+
+@media (max-width: 600px) {
+    .actions {
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .actions-col {
+        width: auto;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-header h1 {
+        font-size: 26px;
+    }
+
+    th,
+    td {
+        padding: 12px;
+    }
+}

@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ problem.title }} | Solve</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='solve.css') }}">
+
+    <!-- CodeMirror (lightweight code editor, no build step needed) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/eclipse.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/material-ocean.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/python/python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/clike/clike.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/matchbrackets.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closebrackets.min.js"></script>
+</head>
+
+<body>
+
+    <!-- TOP BAR -->
+    <header class="solve-topbar">
+        <div class="topbar-left">
+            <a href="javascript:history.back()" class="back-link">&larr; Problems</a>
+            <span class="divider">/</span>
+            <span class="problem-name">{{ problem.title }}</span>
+        </div>
+        <div class="topbar-right">
+            <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Switch to dark theme">☾ Dark</button>
+            <span id="verdict-pill-holder">
+            {% if last_submission %}
+            <span class="verdict-pill verdict-{{ last_submission.verdict | lower | replace(' ', '-') }}" id="verdict-pill">
+                {{ last_submission.verdict }} &middot; {{ last_submission.passed }}/{{ last_submission.total }}
+            </span>
+            {% else %}
+            <span class="verdict-pill verdict-todo" id="verdict-pill">Not Attempted</span>
+            {% endif %}
+            </span>
+        </div>
+    </header>
+
+    <div class="solve-body">
+
+        <!-- LEFT: PROBLEM STATEMENT -->
+        <section class="statement-pane">
+            <div class="statement-tabs">
+                <button class="stmt-tab active" data-tab="description">Description</button>
+                <button class="stmt-tab" data-tab="submissions">My Submission</button>
+            </div>
+
+            <div class="statement-content" id="tab-description">
+                <h1>{{ problem.title }}</h1>
+
+                <div class="prose">{{ problem.description }}</div>
+
+                {% if problem.input_format %}
+                <h3>Input Format</h3>
+                <div class="prose">{{ problem.input_format }}</div>
+                {% endif %}
+
+                {% if problem.output_format %}
+                <h3>Output Format</h3>
+                <div class="prose">{{ problem.output_format }}</div>
+                {% endif %}
+
+                {% if problem.constraints %}
+                <h3>Constraints</h3>
+                <div class="prose">{{ problem.constraints }}</div>
+                {% endif %}
+
+                {% if samples %}
+                {% for s in samples %}
+                <h3>Sample Input {{ loop.index }}</h3>
+                <pre class="io-block">{{ s.input }}</pre>
+                <h3>Sample Output {{ loop.index }}</h3>
+                <pre class="io-block">{{ s.output }}</pre>
+                {% endfor %}
+                {% elif problem.sample_input %}
+                <h3>Sample Input</h3>
+                <pre class="io-block">{{ problem.sample_input }}</pre>
+                <h3>Sample Output</h3>
+                <pre class="io-block">{{ problem.sample_output }}</pre>
+                {% endif %}
+
+                <p class="time-limit-note">Time limit: {{ (problem.time_limit_ms or 2000) / 1000 }}s per test case</p>
+            </div>
+
+            <div class="statement-content hidden" id="tab-submissions">
+                {% if last_submission %}
+                <p class="sub-meta">
+                    <span class="verdict-pill verdict-{{ last_submission.verdict | lower | replace(' ', '-') }}">
+                        {{ last_submission.verdict }}
+                    </span>
+                    &nbsp;{{ last_submission.passed }}/{{ last_submission.total }} test cases &middot;
+                    {{ last_submission.language }} &middot;
+                    {{ last_submission.submitted_at.strftime('%d %b %Y, %H:%M') if last_submission.submitted_at else '' }}
+                </p>
+                <pre class="io-block code-block">{{ last_submission.code }}</pre>
+                {% else %}
+                <p class="empty-note">You haven't submitted a solution for this problem yet.</p>
+                {% endif %}
+            </div>
+        </section>
+
+        <!-- RIGHT: EDITOR + CONSOLE -->
+        <section class="editor-pane">
+
+            <div class="editor-toolbar">
+                <select id="language-select">
+                    <option value="python3">Python 3</option>
+                    <option value="cpp">C++17</option>
+                    <option value="c">C</option>
+                    <option value="java">Java</option>
+                </select>
+
+                <div class="toolbar-spacer"></div>
+
+                <button id="reset-btn" class="tool-btn ghost" title="Reset to starter code">Reset</button>
+                <button id="run-btn" class="tool-btn" {% if not runner_enabled %}disabled title="Start Docker and configure the isolated runner to enable code execution"{% endif %}>Run Code</button>
+                <button id="submit-btn" class="tool-btn primary" {% if not runner_enabled %}disabled title="Start Docker and configure the isolated runner to enable automatic grading"{% endif %}>Submit</button>
+            </div>
+
+            <div class="runner-notice" role="status">
+                {% if runner_enabled %}
+                Code runs in a restricted Docker container. Your draft is saved in this browser.
+                {% else %}
+                Code execution is paused. Start Docker and configure the isolated runner; your draft stays in this browser.
+                {% endif %}
+            </div>
+
+            <div class="editor-wrap">
+                <textarea id="code-editor"></textarea>
+            </div>
+
+            <div class="console-pane">
+                <div class="console-tabs" id="console-tabs">
+                    <button class="console-tab active" data-ctab="custom">Custom Input</button>
+                    <button class="console-tab" data-ctab="results">Test Results</button>
+                </div>
+
+                <div class="console-content" id="console-custom">
+                    <div class="custom-io-row">
+                        <div class="custom-io-col">
+                            <label>stdin</label>
+                            <textarea id="custom-stdin" placeholder="Type input for your program here...">{{ samples[0].input if samples else problem.sample_input or '' }}</textarea>
+                        </div>
+                        <div class="custom-io-col">
+                            <label>Output</label>
+                            <pre id="run-output" class="run-output">Click &quot;Run Code&quot; to see output here.</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="console-content hidden" id="console-results">
+                    <div id="results-summary" class="results-summary">Submit your code to see test case results.</div>
+                    <div id="results-list" class="results-list"></div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const PROBLEM_ID = {{ problem._id | string | tojson }};
+        const STARTER_CODE = {{ starter | tojson }};
+
+        const DEFAULT_STARTER = {
+            python3: "# Read input with input(), print output with print()\n\n",
+            cpp: "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    // your code here\n    return 0;\n}\n",
+            c: "#include <stdio.h>\n\nint main() {\n    // your code here\n    return 0;\n}\n",
+            java: "import java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        // your code here\n    }\n}\n"
+        };
+
+        const MODE_BY_LANG = {
+            python3: "python",
+            cpp: "text/x-c++src",
+            c: "text/x-csrc",
+            java: "text/x-java"
+        };
+
+        const STORAGE_PREFIX = "devhost_code_" + PROBLEM_ID + "_";
+
+        function starterFor(lang) {
+            return (STARTER_CODE && STARTER_CODE[lang] && STARTER_CODE[lang].trim())
+                ? STARTER_CODE[lang]
+                : DEFAULT_STARTER[lang];
+        }
+
+        const editor = CodeMirror.fromTextArea(document.getElementById("code-editor"), {
+            lineNumbers: true,
+            mode: "python",
+            theme: "eclipse",
+            indentUnit: 4,
+            tabSize: 4,
+            matchBrackets: true,
+            autoCloseBrackets: true,
+            viewportMargin: Infinity
+        });
+
+        const themeToggle = document.getElementById("theme-toggle");
+        function setTheme(theme) {
+            const dark = theme === "dark";
+            document.documentElement.dataset.theme = theme;
+            document.body.classList.toggle("dark-theme", dark);
+            editor.setOption("theme", dark ? "material-ocean" : "eclipse");
+            themeToggle.textContent = dark ? "☀ Light" : "☾ Dark";
+            themeToggle.setAttribute("aria-label", dark ? "Switch to light theme" : "Switch to dark theme");
+            localStorage.setItem("hacktoverse-theme", theme);
+        }
+        themeToggle.addEventListener("click", () => setTheme(document.body.classList.contains("dark-theme") ? "light" : "dark"));
+        setTheme(localStorage.getItem("hacktoverse-theme") || "light");
+
+        const langSelect = document.getElementById("language-select");
+
+        function loadLanguage(lang, forceReset) {
+            editor.setOption("mode", MODE_BY_LANG[lang]);
+            const saved = !forceReset && localStorage.getItem(STORAGE_PREFIX + lang);
+            editor.setValue(saved || starterFor(lang));
+        }
+
+        langSelect.addEventListener("change", () => loadLanguage(langSelect.value, false));
+        loadLanguage(langSelect.value, false);
+
+        editor.on("change", () => {
+            localStorage.setItem(STORAGE_PREFIX + langSelect.value, editor.getValue());
+        });
+
+        document.getElementById("reset-btn").addEventListener("click", () => {
+            if (confirm("Reset code to the starter template? This can't be undone.")) {
+                localStorage.removeItem(STORAGE_PREFIX + langSelect.value);
+                loadLanguage(langSelect.value, true);
+            }
+        });
+
+        // ---------- Tabs ----------
+        document.querySelectorAll(".stmt-tab").forEach(btn => {
+            btn.addEventListener("click", () => {
+                document.querySelectorAll(".stmt-tab").forEach(b => b.classList.remove("active"));
+                btn.classList.add("active");
+                document.querySelectorAll(".statement-content").forEach(c => c.classList.add("hidden"));
+                document.getElementById("tab-" + btn.dataset.tab).classList.remove("hidden");
+            });
+        });
+
+        document.querySelectorAll(".console-tab").forEach(btn => {
+            btn.addEventListener("click", () => {
+                document.querySelectorAll(".console-tab").forEach(b => b.classList.remove("active"));
+                btn.classList.add("active");
+                document.querySelectorAll(".console-content").forEach(c => c.classList.add("hidden"));
+                document.getElementById("console-" + btn.dataset.ctab).classList.remove("hidden");
+            });
+        });
+
+        function switchConsoleTab(tab) {
+            document.querySelectorAll(".console-tab").forEach(b => b.classList.toggle("active", b.dataset.ctab === tab));
+            document.querySelectorAll(".console-content").forEach(c => c.classList.add("hidden"));
+            document.getElementById("console-" + tab).classList.remove("hidden");
+        }
+
+        // ---------- Run ----------
+        const runBtn = document.getElementById("run-btn");
+        const submitBtn = document.getElementById("submit-btn");
+        const runOutput = document.getElementById("run-output");
+
+        runBtn.addEventListener("click", async () => {
+            switchConsoleTab("custom");
+            runBtn.disabled = true;
+            runBtn.textContent = "Running...";
+            runOutput.textContent = "Running your code...";
+            runOutput.className = "run-output";
+
+            try {
+                const res = await fetch(`/api/run/${PROBLEM_ID}`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        language: langSelect.value,
+                        code: editor.getValue(),
+                        stdin: document.getElementById("custom-stdin").value
+                    })
+                });
+                const data = await res.json();
+
+                if (data.error) {
+                    runOutput.textContent = data.error;
+                    runOutput.classList.add("error");
+                } else if (data.compile_error) {
+                    runOutput.textContent = "Compilation Error:\n\n" + data.compile_error;
+                    runOutput.classList.add("error");
+                } else if (data.timed_out) {
+                    runOutput.textContent = "Time Limit Exceeded";
+                    runOutput.classList.add("error");
+                } else {
+                    let text = data.stdout || "(no output)";
+                    if (data.stderr) text += "\n\n--- stderr ---\n" + data.stderr;
+                    runOutput.textContent = text;
+                    if (data.stderr) runOutput.classList.add("error");
+                }
+            } catch (e) {
+                runOutput.textContent = "Network error while running code: " + e;
+                runOutput.classList.add("error");
+            } finally {
+                runBtn.disabled = false;
+                runBtn.textContent = "Run Code";
+            }
+        });
+
+        // ---------- Submit ----------
+        submitBtn.addEventListener("click", async () => {
+            switchConsoleTab("results");
+            submitBtn.disabled = true;
+            submitBtn.textContent = "Judging...";
+
+            const summary = document.getElementById("results-summary");
+            const list = document.getElementById("results-list");
+            summary.textContent = "Running your code against all test cases...";
+            summary.className = "results-summary";
+            list.innerHTML = "";
+
+            try {
+                const res = await fetch(`/api/submit_code/${PROBLEM_ID}`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ language: langSelect.value, code: editor.getValue() })
+                });
+                const data = await res.json();
+
+                if (data.error) {
+                    summary.textContent = data.error;
+                    summary.classList.add("error");
+                    return;
+                }
+
+                if (data.compile_error) {
+                    summary.textContent = "Compilation Error";
+                    summary.classList.add("error");
+                    list.innerHTML = `<pre class="io-block">${escapeHtml(data.compile_error)}</pre>`;
+                } else {
+                    const verdictClass = "verdict-" + data.verdict.toLowerCase().replace(/ /g, "-");
+                    summary.innerHTML = `<span class="verdict-pill ${verdictClass}">${data.verdict}</span>
+                        &nbsp;${data.passed}/${data.total} test cases passed &middot; Score: ${data.marks}%`;
+
+                    data.results.forEach(r => {
+                        const row = document.createElement("div");
+                        row.className = "result-row " + (r.passed ? "pass" : "fail");
+                        let inner = `<div class="result-head">
+                            <span>Test Case ${r.index}${r.is_sample ? " (sample)" : ""}</span>
+                            <span class="result-status">${r.timed_out ? "Time Limit Exceeded" : (r.passed ? "Passed" : "Failed")}</span>
+                        </div>`;
+                        if (r.is_sample) {
+                            inner += `<div class="result-detail">
+                                <div><label>Input</label><pre>${escapeHtml(r.input)}</pre></div>
+                                <div><label>Expected</label><pre>${escapeHtml(r.expected)}</pre></div>
+                                <div><label>Your Output</label><pre>${escapeHtml(r.actual || "")}</pre></div>
+                            </div>`;
+                        }
+                        row.innerHTML = inner;
+                        list.appendChild(row);
+                    });
+                }
+
+                // refresh top-right pill
+                const holder = document.getElementById("verdict-pill-holder");
+                const verdictClass = "verdict-" + data.verdict.toLowerCase().replace(/ /g, "-");
+                holder.innerHTML = `<span class="verdict-pill ${verdictClass}">${data.verdict} &middot; ${data.passed}/${data.total}</span>`;
+            } catch (e) {
+                summary.textContent = "Network error while submitting: " + e;
+                summary.classList.add("error");
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = "Submit";
+            }
+        });
+
+        function escapeHtml(str) {
+            const div = document.createElement("div");
+            div.innerText = str == null ? "" : str;
+            return div.innerHTML;
+        }
+    </script>
+</body>
+
+</html>

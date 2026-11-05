@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hacktoverse | Submit</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='submit.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='portal.css') }}">
+</head>
+
+<body>
+    {% include '_portal_nav.html' %}
+    <a href="/events" class="back-link">&larr; Back to events</a>
+    <div class="container">
+        <h2>{{ "Submit Code Archive" if problem.get("submission_kind") == "source_archive" else "Submit File" }}</h2>
+        <p class="problem-title">{{ problem.title }}</p>
+        {% if problem.get("submission_kind") == "source_archive" %}
+        <p class="submission-help">Upload one .zip containing your source code and a README with the language/version and run instructions. Code is reviewed manually; the online runner is not enabled.</p>
+        {% else %}
+        <p class="submission-help">Choose a supported file to submit for organizer review.</p>
+        {% endif %}
+        <form method="post" enctype="multipart/form-data">
+            <input type="file" name="file" accept="{{ '.zip' if problem.get('submission_kind') == 'source_archive' else '.zip,.ppt,.pptx,.pdf' }}" required>
+            <button>{{ "Submit archive" if problem.get("submission_kind") == "source_archive" else "Upload" }}</button>
+        </form>
+    </div>
+</body>
+
+</html>

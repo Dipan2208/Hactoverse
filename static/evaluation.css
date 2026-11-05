@@ -1,0 +1,101 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background: #0f0f0f;
+    min-height: 100vh;
+    padding: 40px 20px;
+    color: #111;
+}
+
+.container {
+    max-width: 720px;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.container h2 {
+    color: #fff;
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.card {
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 22px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.sub-title {
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.sub-id {
+    font-size: 12px;
+    color: #888;
+}
+
+.card form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 6px;
+}
+
+.card input,
+.card textarea {
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1.5px solid #ccc;
+    font-size: 14px;
+    font-family: inherit;
+    outline: none;
+}
+
+.card input:focus,
+.card textarea:focus {
+    border-color: #111;
+}
+
+.card textarea {
+    resize: vertical;
+    min-height: 70px;
+}
+
+.card button {
+    padding: 10px;
+    border-radius: 8px;
+    border: none;
+    background: #111;
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.card button:hover {
+    background: #000;
+}
+
+.waiting {
+    color: #b45309;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.empty {
+    color: #999;
+    text-align: center;
+    padding: 40px 0;
+}

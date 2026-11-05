@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Hacktoverse | Events</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='events.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='portal.css') }}">
+</head>
+
+<body>
+    {% include '_portal_nav.html' %}
+
+    <main class="page">
+        <a href="/home" class="back-link">&larr; Back to dashboard</a>
+        <header class="page-header">
+            <h2>Events</h2>
+            <p>Browse and participate in active events</p>
+        </header>
+
+        <section class="events-container">
+
+            {% for event in events %}
+            <div class="event-card">
+                <h3>{{ event.title }}</h3>
+                <p>{{ event.description }}</p>
+                <p class="event-status status-{{ event.lifecycle_state }}">{{ event.status_label }}</p>
+                {% if event.can_participate %}
+                <a href="/problems/{{ event._id }}">View Problems</a>
+                {% elif event.lifecycle_state == "draft" %}
+                <p class="event-notice">The organizer has not started this event yet.</p>
+                {% elif event.lifecycle_state == "active" %}
+                <p class="event-notice">This event is not within its scheduled dates.</p>
+                {% endif %}
+                <a href="/rankings/{{ event._id }}">View Rankings</a>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                No events available right now.
+            </div>
+            {% endfor %}
+
+        </section>
+    </main>
+
+</body>
+
+</html>

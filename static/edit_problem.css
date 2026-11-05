@@ -1,0 +1,162 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background: #0f0f0f;
+    min-height: 100vh;
+    color: #111;
+}
+
+.page {
+    max-width: 800px;
+    margin: auto;
+    padding: 60px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+}
+
+select {
+    padding: 12px 14px;
+    border-radius: 8px;
+    border: 1.5px solid #ccc;
+    font-size: 14px;
+    font-family: inherit;
+    outline: none;
+    background: #fff;
+}
+
+.row-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+
+@media (max-width: 700px) {
+    .row-2 { grid-template-columns: 1fr; }
+}
+
+.mono {
+    font-family: "SFMono-Regular", Consolas, Menlo, monospace;
+    font-size: 13px;
+    min-height: 70px;
+}
+
+.hint {
+    font-weight: 400;
+    color: #999;
+    font-size: 12px;
+}
+
+.subheading {
+    margin-top: 10px;
+    font-size: 15px;
+    font-weight: 700;
+    color: #111;
+}
+
+#code-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.manage-tests-link {
+    color: #2563eb;
+    font-weight: 600;
+    font-size: 14px;
+    text-decoration: none;
+}
+
+.manage-tests-link:hover {
+    text-decoration: underline;
+}
+
+.page-header h1 {
+    font-size: 32px;
+    font-weight: 700;
+    color: #fff;
+}
+
+.page-header p {
+    margin-top: 6px;
+    font-size: 14px;
+    color: #999;
+}
+
+.panel {
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 28px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+label {
+    font-size: 13px;
+    color: #555;
+}
+
+input,
+textarea {
+    padding: 12px 14px;
+    border-radius: 8px;
+    border: 1.5px solid #ccc;
+    font-size: 14px;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+input:focus,
+textarea:focus {
+    border-color: #111;
+}
+
+textarea {
+    resize: vertical;
+    min-height: 140px;
+}
+
+button {
+    margin-top: 8px;
+    padding: 13px;
+    border-radius: 10px;
+    border: none;
+    background: #111;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.15s ease, background 0.15s ease;
+}
+
+button:hover {
+    background: #000;
+    transform: translateY(-1px);
+}
+
+@media (max-width: 480px) {
+    .page-header h1 {
+        font-size: 26px;
+    }
+
+    .panel {
+        padding: 20px;
+    }
+}

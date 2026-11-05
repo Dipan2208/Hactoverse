@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hacktoverse | My progress</title>
+    <link rel="stylesheet" href="/static/evaluation.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='portal.css') }}">
+</head>
+
+<body>
+    {% include '_portal_nav.html' %}
+    <a href="/home" class="back-link">&larr; Back to dashboard</a>
+    <div class="container">
+        <h2>Evaluations</h2>
+
+        {% for s in submissions %}
+        <div class="card">
+            <p class="sub-title">{{ s.user_name }} — {{ s.problem_title }}</p>
+            <p class="sub-id">Submission ID: {{ s._id }}</p>
+
+            {% if s.verdict %}
+            <p class="sub-id">
+                Auto-graded: <strong>{{ s.verdict }}</strong>
+                ({{ s.passed }}/{{ s.total }} test cases, {{ s.language }})
+            </p>
+            {% endif %}
+
+            {% if user and user.role == "admin" %}
+            <form action="/evaluate/{{ s._id }}" method="post">
+                <input name="marks" type="number" placeholder="Marks" value="{{ s.marks if s.marks is not none else '' }}">
+                <textarea name="remarks" placeholder="Remarks">{{ s.remarks }}</textarea>
+                <button>Evaluate</button>
+            </form>
+            {% else %}
+            <p class="waiting">Waiting for evaluation</p>
+            {% endif %}
+        </div>
+        {% else %}
+        <p class="empty">No submissions yet</p>
+        {% endfor %}
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hacktoverse | Organizer dashboard</title>
+    <link rel="stylesheet" href="/static/admin.css">
+    <link rel="stylesheet" href="/static/portal.css">
+</head>
+
+<body>
+    {% include '_portal_nav.html' %}
+    <a href="/home" class="back-link">&larr; Back to dashboard</a>
+    <main class="dashboard">
+
+        <!-- Header -->
+        <header class="dashboard-header">
+            <h1>Admin Dashboard</h1>
+            <p>Manage events and problems from one place</p>
+        </header>
+
+        <!-- Main Grid -->
+        <section class="dashboard-grid">
+
+            <!-- Left: Add Event -->
+            <section class="panel">
+                <h2>Add Event</h2>
+
+                <form method="post">
+                    {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                    <div class="form-messages" role="status">
+                        {% for message in messages %}<p>{{ message }}</p>{% endfor %}
+                    </div>
+                    {% endif %}
+                    {% endwith %}
+                    <div class="field">
+                        <label>Event Title</label>
+                        <input name="title" placeholder="Eg: Hackathon 2025" required>
+                    </div>
+
+                    <div class="field">
+                        <label>Description</label>
+                        <textarea name="description" placeholder="Short description..." required></textarea>
+                    </div>
+
+                    <div class="row">
+                        <div class="field">
+                            <label>Start Date</label>
+                            <input type="date" name="start" required>
+                        </div>
+
+                        <div class="field">
+                            <label>End Date</label>
+                            <input type="date" name="end" required>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label>Contest duration (minutes)</label>
+                        <input type="number" name="contest_duration_minutes" value="45" min="1" max="1440" required>
+                    </div>
+
+                    <button type="submit">Create Event</button>
+                </form>
+            </section>
+
+            <!-- Right: Events -->
+            <section class="panel panel-soft">
+                <h2>All Events</h2>
+
+                <div class="events">
+                    {% for e in events %}
+                    <div class="event-card">
+                        <div class="event-info">
+                            <h3>{{ e.title }}</h3>
+                            <p>{{ e.start_date.strftime('%d %b %Y') }} – {{ e.end_date.strftime('%d %b %Y') }} · {{ e.get("contest_duration_minutes", 45) }} minute timer</p>
+                            <span class="event-state state-{{ e.lifecycle_state }}">{{ e.lifecycle_state | capitalize }}</span>
+                        </div>
+                        <div class="event-actions">
+                            {% if e.lifecycle_state == "draft" %}
+                            <form method="post" action="/admin/events/{{ e._id }}/start"
+                                onsubmit="return confirm('Start this competition now? Participants will be able to join.')">
+                                <button class="event-action start-event" type="submit">Start event</button>
+                            </form>
+                            {% elif e.lifecycle_state == "active" %}
+                            <form method="post" action="/admin/events/{{ e._id }}/end"
+                                onsubmit="return confirm('End this competition now? Participants will no longer be able to participate or submit.')">
+                                <button class="event-action end-event" type="submit">End event</button>
+                            </form>
+                            {% endif %}
+                            <a href="/admin/events/{{ e._id }}/settings">Settings</a>
+                            <a href="/admin/problems/{{ e._id }}">Manage</a>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="empty">No events created yet</div>
+                    {% endfor %}
+                </div>
+            </section>
+
+        </section>
+    </main>
+</body>
+
+</html>

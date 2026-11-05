@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hacktoverse | Test cases | {{ problem.title }}</title>
+    <link rel="stylesheet" href="/static/admin_problems.css">
+    <link rel="stylesheet" href="/static/admin_testcases.css">
+    <link rel="stylesheet" href="/static/portal.css">
+</head>
+
+<body>
+    {% include '_portal_nav.html' %}
+    <main class="page">
+
+        <header class="page-header">
+            <h1>Test Cases</h1>
+            <p>Problem: {{ problem.title }} &middot; <a href="/admin/problems/edit/{{ problem._id }}" class="back-link">&larr; Back to problem</a></p>
+        </header>
+
+        <section class="panel">
+            <h2>Add Test Case</h2>
+            <form method="post">
+                <div class="row-2">
+                    <div class="field">
+                        <label>Input (stdin)</label>
+                        <textarea name="input" class="mono" placeholder="6 3&#10;7 10 4 3 20 15" required></textarea>
+                    </div>
+                    <div class="field">
+                        <label>Expected Output (stdout)</label>
+                        <textarea name="output" class="mono" placeholder="10" required></textarea>
+                    </div>
+                </div>
+
+                <label class="checkbox-row">
+                    <input type="checkbox" name="is_sample">
+                    Mark as sample test case (visible to participants on the problem page)
+                </label>
+
+                <button type="submit">Add Test Case</button>
+            </form>
+        </section>
+
+        <section class="panel panel-soft">
+            <h2>Existing Test Cases ({{ tests | length }})</h2>
+
+            <div class="testcase-list">
+                {% for t in tests %}
+                <div class="testcase-card">
+                    <div class="testcase-card-head">
+                        <span>Test Case {{ loop.index }}</span>
+                        <span class="badge {{ 'badge-sample' if t.is_sample else 'badge-hidden' }}">
+                            {{ "Sample" if t.is_sample else "Hidden" }}
+                        </span>
+                        <a href="/admin/testcases/delete/{{ t._id }}" class="btn btn-delete"
+                            onclick="return confirm('Delete this test case?')">Delete</a>
+                    </div>
+                    <div class="testcase-io">
+                        <div>
+                            <label>Input</label>
+                            <pre>{{ t.input }}</pre>
+                        </div>
+                        <div>
+                            <label>Output</label>
+                            <pre>{{ t.output }}</pre>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <p class="empty">No test cases yet. Add at least one so participants can submit.</p>
+                {% endfor %}
+            </div>
+        </section>
+
+    </main>
+</body>
+
+</html>

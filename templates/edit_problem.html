@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hacktoverse | Edit challenge</title>
+    <link rel="stylesheet" href="/static/edit_problem.css">
+    <link rel="stylesheet" href="/static/portal.css">
+</head>
+
+<body>
+    {% include '_portal_nav.html' %}
+    <a href="/admin" class="back-link">&larr; Back to admin</a>
+    <main class="page">
+
+        <!-- Header -->
+        <header class="page-header">
+            <h1>Edit Problem</h1>
+            <p>Update the problem statement details</p>
+        </header>
+
+        <!-- Edit Form -->
+        <section class="panel">
+            <form method="post">
+                <div class="field">
+                    <label>Problem Title</label>
+                    <input name="title" value="{{ problem.title }}" required>
+                </div>
+
+                <div class="row-2">
+                    <div class="field">
+                        <label>Problem Type</label>
+                        <select name="problem_type" id="problem-type-select">
+                            <option value="code" {{ "selected" if problem.get("problem_type", "file") == "code" }}>Code &amp; Run (auto-graded)</option>
+                            <option value="file" {{ "selected" if problem.get("problem_type", "file") == "file" }}>File Upload (manual grading)</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label>Difficulty</label>
+                        <select name="difficulty">
+                            {% for d in ["Easy", "Medium", "Hard"] %}
+                            <option {{ "selected" if problem.difficulty == d }}>{{ d }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label>Description</label>
+                    <textarea name="description" required>{{ problem.description }}</textarea>
+                </div>
+
+                <div id="code-fields">
+                    <div class="row-2">
+                        <div class="field">
+                            <label>Input Format</label>
+                            <textarea name="input_format">{{ problem.input_format or "" }}</textarea>
+                        </div>
+                        <div class="field">
+                            <label>Output Format</label>
+                            <textarea name="output_format">{{ problem.output_format or "" }}</textarea>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label>Constraints</label>
+                        <textarea name="constraints">{{ problem.constraints or "" }}</textarea>
+                    </div>
+
+                    <div class="row-2">
+                        <div class="field">
+                            <label>Sample Input</label>
+                            <textarea name="sample_input" class="mono">{{ problem.sample_input or "" }}</textarea>
+                        </div>
+                        <div class="field">
+                            <label>Sample Output</label>
+                            <textarea name="sample_output" class="mono">{{ problem.sample_output or "" }}</textarea>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label>Time Limit (ms)</label>
+                        <input type="number" name="time_limit_ms" value="{{ problem.time_limit_ms or 2000 }}" min="500" step="500">
+                    </div>
+
+                    <h3 class="subheading">Starter Code <span class="hint">(optional)</span></h3>
+
+                    <div class="field">
+                        <label>Python 3</label>
+                        <textarea name="starter_python" class="mono">{{ problem.starter_code.python3 if problem.starter_code else "" }}</textarea>
+                    </div>
+                    <div class="row-2">
+                        <div class="field">
+                            <label>C++17</label>
+                            <textarea name="starter_cpp" class="mono">{{ problem.starter_code.cpp if problem.starter_code else "" }}</textarea>
+                        </div>
+                        <div class="field">
+                            <label>C</label>
+                            <textarea name="starter_c" class="mono">{{ problem.starter_code.c if problem.starter_code else "" }}</textarea>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label>Java <span class="hint">(class must be named "Main")</span></label>
+                        <textarea name="starter_java" class="mono">{{ problem.starter_code.java if problem.starter_code else "" }}</textarea>
+                    </div>
+
+                    {% if problem.get("problem_type", "file") == "code" %}
+                    <a href="/admin/testcases/{{ problem._id }}" class="manage-tests-link">Manage test cases &rarr;</a>
+                    {% endif %}
+                </div>
+
+                <button type="submit">Save Changes</button>
+            </form>
+        </section>
+
+    </main>
+
+    <script>
+        const typeSelect = document.getElementById("problem-type-select");
+        const codeFields = document.getElementById("code-fields");
+        function syncFields() {
+            codeFields.style.display = typeSelect.value === "code" ? "flex" : "none";
+        }
+        typeSelect.addEventListener("change", syncFields);
+        syncFields();
+    </script>
+</body>
+
+</html>

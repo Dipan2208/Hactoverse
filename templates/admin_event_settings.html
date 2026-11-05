@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Competition settings | Hacktoverse</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='portal.css') }}">
+</head>
+
+<body>
+    {% include '_portal_nav.html' %}
+    <a href="/admin" class="back-link">&larr; Back to organizer</a>
+    <main class="dashboard">
+        <header class="dashboard-header">
+            <h1>Competition settings</h1>
+            <p>Update event dates and the time participants get to solve its challenges.</p>
+        </header>
+
+        <section class="panel">
+            <h2>{{ event.title }}</h2>
+            <form method="post">
+                {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                <div class="form-messages" role="status">
+                    {% for message in messages %}<p>{{ message }}</p>{% endfor %}
+                </div>
+                {% endif %}
+                {% endwith %}
+
+                <div class="field">
+                    <label for="title">Event title</label>
+                    <input id="title" name="title" value="{{ event.title }}" required>
+                </div>
+
+                <div class="field">
+                    <label for="description">Description</label>
+                    <textarea id="description" name="description" required>{{ event.description }}</textarea>
+                </div>
+
+                <div class="row">
+                    <div class="field">
+                        <label for="start">Start date</label>
+                        <input id="start" type="date" name="start" value="{{ start_date }}" required>
+                    </div>
+                    <div class="field">
+                        <label for="end">End date</label>
+                        <input id="end" type="date" name="end" value="{{ end_date }}" required>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label for="contest_duration_minutes">Participant contest timer (minutes)</label>
+                    <input id="contest_duration_minutes" type="number" name="contest_duration_minutes"
+                        value="{{ contest_duration_minutes }}" min="1" max="1440" required>
+                    <small>Each participant’s timer starts when they first open this event’s challenge list.</small>
+                </div>
+
+                <button type="submit">Save settings</button>
+            </form>
+        </section>
+    </main>
+</body>
+
+</html>

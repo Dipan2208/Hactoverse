@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Hacktoverse | Challenges</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='problems.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='portal.css') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+    {% include '_portal_nav.html' %}
+    <div class="problems-page-container">
+        <div class="problems-page">
+            <a href="/events" class="back-link">&larr; Back to events</a>
+            <div class="problems-header">
+                <h2>{{ event.title }}</h2>
+                <p class="problems-subtitle">You have {{ contest_duration_minutes }} minutes once you open the challenge list. Solve coding challenges in the browser editor; upload a file for challenges that require manual review.</p>
+            </div>
+            <section class="contest-timer-bar"><span>CONTEST TIME · {{ contest.duration_minutes }} MINUTES</span><strong id="contest-timer">--:--</strong></section>
+
+            <div class="problems-table-wrapper">
+
+                <table class="problems-table">
+                    <thead>
+                        <tr>
+                            <th class="col-status">Status</th>
+                            <th>Title</th>
+                            <th class="col-type">Type</th>
+                            <th class="col-action">Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for p in problems %}
+                        <tr>
+                            <td class="col-status">
+                                <span class="status-dot status-{{ p.status }}" title="{{ p.status | capitalize }}"></span>
+                            </td>
+
+                            <td class="problem-title-cell">
+                                {% if p.get("problem_type", "file") == "code" %}
+                                <a href="/solve/{{ p._id }}">{{ p.title }}</a>
+                                {% else %}
+                                <a href="/submit/{{ p._id }}">{{ p.title }}</a>
+                                {% endif %}
+                            </td>
+
+                            <td class="col-type">
+                                {% if p.get("problem_type", "file") == "code" %}
+                                <span class="type-badge type-code">Code &amp; Run</span>
+                                {% elif p.get("submission_kind") == "source_archive" %}
+                                <span class="type-badge type-file">Code Archive</span>
+                                {% else %}
+                                <span class="type-badge type-file">File Upload</span>
+                                {% endif %}
+                            </td>
+
+                            <td class="col-action">
+                                {% if p.get("problem_type", "file") == "code" %}
+                                <a href="/solve/{{ p._id }}" class="view-problem-button">Solve</a>
+                                {% else %}
+                                <a href="/submit/{{ p._id }}" class="view-problem-button">Submit</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+
+                        {% else %}
+                        <tr>
+                            <td colspan="5" class="problems-empty-state">
+                                No problem statements available yet.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+    </div>
+    <script>
+      let remaining = {{ contest.remaining_seconds }};
+      const timer = document.getElementById('contest-timer');
+      timer.textContent = `${String(Math.floor(remaining/60)).padStart(2,'0')}:${String(remaining%60).padStart(2,'0')}`;
+      function tick(){ const m=Math.floor(remaining/60), s=remaining%60; timer.textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`; if(remaining<=0){timer.classList.add('expired');} remaining=Math.max(0,remaining-1); }
+      tick(); setInterval(tick,1000);
+    </script>
+</body>
+
+</html>

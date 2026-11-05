@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create account | Hacktoverse</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='portal.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
+</head>
+
+<body class="login-page">
+    <main class="login-shell">
+        <section class="login-art" aria-label="Hacktoverse community">
+            <div class="art-orbit art-orbit-one"></div>
+            <div class="art-orbit art-orbit-two"></div>
+            <div class="art-robot" aria-hidden="true">
+                <span class="art-antenna"></span>
+                <span class="art-robot-head"><i></i><i></i></span>
+                <span class="art-robot-body"></span>
+            </div>
+            <div class="art-copy">
+                <span class="art-brand">HACKTOVERSE</span>
+                <h1>Make room<br>for your <em>ideas.</em></h1>
+                <p>Join students and organizers creating challenges, sharing skills, and building together.</p>
+            </div>
+            <div class="art-credit">LEARN TOGETHER · BUILD WHAT'S NEXT</div>
+        </section>
+
+        <section class="auth-panel">
+            <div class="auth-toolbar">
+                <a class="auth-brand" href="/"> <span>H</span> Hacktoverse</a>
+                <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch to dark theme">☾ Dark</button>
+            </div>
+            <div class="auth-content">
+                <p class="kicker">GET STARTED</p>
+                <h2>Create your<br><strong>account.</strong></h2>
+                <p class="auth-intro">A few details and you’re ready to find your next build.</p>
+                {% with messages = get_flashed_messages() %}
+                {% if messages %}<div class="flash-message" role="status">{{ messages[0] }}</div>{% endif %}
+                {% endwith %}
+                <form method="post">
+                    <label>Your name
+                        <input name="name" placeholder="How should we call you?" autocomplete="name" required>
+                    </label>
+                    <label>Email
+                        <input name="email" type="email" placeholder="you@example.com" autocomplete="email" required>
+                    </label>
+                    <label>Password
+                        <input name="password" type="password" placeholder="Create a password" autocomplete="new-password" required>
+                    </label>
+                    <button class="auth-submit" type="submit">Create account <span aria-hidden="true">↗</span></button>
+                </form>
+                <p class="register-copy">Already have an account? <a href="/">Sign in</a></p>
+            </div>
+        </section>
+    </main>
+    <script src="{{ url_for('static', filename='theme.js') }}"></script>
+</body>
+
+</html>

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hacktoverse | Manage challenges</title>
+    <link rel="stylesheet" href="/static/admin_problems.css">
+    <link rel="stylesheet" href="/static/portal.css">
+</head>
+
+<body>
+    {% include '_portal_nav.html' %}
+    <a href="/admin" class="back-link">&larr; Back to admin</a>
+    <main class="page">
+
+        <!-- Header -->
+        <header class="page-header">
+            <h1>Manage Problems</h1>
+            <p>Event: {{ event.title }}</p>
+        </header>
+
+        <!-- Add Problem -->
+        <section class="panel">
+            <h2>Add New Problem</h2>
+
+            <form method="post" id="add-problem-form">
+                <div class="field">
+                    <label>Problem Title</label>
+                    <input name="title" placeholder="Eg: The K-th Strongest Henchman" required>
+                </div>
+
+                <div class="row-2">
+                    <div class="field">
+                        <label>Problem Type</label>
+                        <select name="problem_type" id="problem-type-select">
+                            <option value="code">Code &amp; Run (auto-graded, in-browser editor)</option>
+                            <option value="file">File Upload (manual grading)</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label>Difficulty</label>
+                        <select name="difficulty">
+                            <option>Easy</option>
+                            <option selected>Medium</option>
+                            <option>Hard</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label>Description</label>
+                    <textarea name="description" placeholder="Describe the problem statement clearly..."
+                        required></textarea>
+                </div>
+
+                <div id="code-fields">
+                    <div class="row-2">
+                        <div class="field">
+                            <label>Input Format</label>
+                            <textarea name="input_format" placeholder="Line 1: N&#10;Line 2: N space-separated integers"></textarea>
+                        </div>
+                        <div class="field">
+                            <label>Output Format</label>
+                            <textarea name="output_format" placeholder="A single integer..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label>Constraints</label>
+                        <textarea name="constraints" placeholder="1 &le; N &le; 100000"></textarea>
+                    </div>
+
+                    <div class="row-2">
+                        <div class="field">
+                            <label>Sample Input <span class="hint">(also saved as a visible sample test case)</span></label>
+                            <textarea name="sample_input" class="mono" placeholder="6 3&#10;7 10 4 3 20 15"></textarea>
+                        </div>
+                        <div class="field">
+                            <label>Sample Output</label>
+                            <textarea name="sample_output" class="mono" placeholder="10"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label>Time Limit (ms)</label>
+                        <input type="number" name="time_limit_ms" value="2000" min="500" step="500">
+                    </div>
+
+                    <h3 class="subheading">Starter Code <span class="hint">(shown by default in the editor per language, optional)</span></h3>
+
+                    <div class="field">
+                        <label>Python 3</label>
+                        <textarea name="starter_python" class="mono" placeholder="# your code here"></textarea>
+                    </div>
+                    <div class="row-2">
+                        <div class="field">
+                            <label>C++17</label>
+                            <textarea name="starter_cpp" class="mono" placeholder="#include &lt;bits/stdc++.h&gt;"></textarea>
+                        </div>
+                        <div class="field">
+                            <label>C</label>
+                            <textarea name="starter_c" class="mono" placeholder="#include &lt;stdio.h&gt;"></textarea>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label>Java <span class="hint">(class must be named "Main")</span></label>
+                        <textarea name="starter_java" class="mono" placeholder="public class Main { ... }"></textarea>
+                    </div>
+                </div>
+
+                <button type="submit">Add Problem</button>
+            </form>
+        </section>
+
+        <!-- Problems Table -->
+        <section class="panel panel-soft">
+            <h2>Existing Problems</h2>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Title</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                            <th class="actions-col">Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for p in problems %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td>{{ p.title }}</td>
+                            <td>{{ "Code & Run" if p.get("problem_type", "file") == "code" else ("Code Archive" if p.get("submission_kind") == "source_archive" else "File Upload") }}</td>
+                            <td class="desc">
+                                {{ p.description }}
+                                {% if p.get("evaluation_guide") %}
+                                <p><strong>Organizer evaluation guide:</strong> {{ p.evaluation_guide }}</p>
+                                {% endif %}
+                            </td>
+                            <td class="actions">
+                                <a href="/admin/problems/edit/{{ p._id }}" class="btn btn-edit">
+                                    Edit
+                                </a>
+
+                                {% if p.get("problem_type", "file") == "code" %}
+                                <a href="/admin/testcases/{{ p._id }}" class="btn btn-tests">
+                                    Test Cases
+                                </a>
+                                {% endif %}
+
+                                <a href="/admin/problems/delete/{{ p._id }}" class="btn btn-delete"
+                                    onclick="return confirm('Delete this problem?')">
+                                    Delete
+                                </a>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="5" class="empty">
+                                No problems added yet
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        const typeSelect = document.getElementById("problem-type-select");
+        const codeFields = document.getElementById("code-fields");
+
+        function syncFields() {
+            codeFields.style.display = typeSelect.value === "code" ? "flex" : "none";
+        }
+        typeSelect.addEventListener("change", syncFields);
+        syncFields();
+    </script>
+</body>
+
+</html>

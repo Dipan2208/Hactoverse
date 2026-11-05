@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#f4f6fb">
+    <title>Hacktoverse | Your space to build</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='portal.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='home.css') }}">
+</head>
+
+<body class="home-page">
+    {% include '_portal_nav.html' %}
+
+    <main class="home-main">
+        <div class="welcome-row">
+            <div>
+                <p class="eyebrow">Your builder dashboard</p>
+                <h1>Welcome back, {{ user.name }}.</h1>
+            </div>
+            <p class="welcome-note"><span aria-hidden="true">●</span> Your next idea starts here</p>
+        </div>
+
+        <section class="hero-panel" aria-labelledby="hero-title">
+            <div class="hero-copy">
+                <p class="eyebrow">Learn together. Build what's next.</p>
+                <h2 id="hero-title">A universe of<br><span>ideas to build.</span></h2>
+                <p>Find a challenge, team up with curious people, and turn your next big idea into something real.</p>
+                <div class="hero-actions">
+                    <a class="primary-action" href="/events">Explore events <span aria-hidden="true">↗</span></a>
+                    <a class="secondary-action" href="/evaluation">View my progress</a>
+                </div>
+            </div>
+            <div class="hero-visual" role="img" aria-label="A friendly robot floating inside a glowing orbit">
+                <div class="bot-orbit" aria-hidden="true"></div>
+                <div class="bot" aria-hidden="true">
+                    <div class="bot-antenna"></div>
+                    <div class="bot-head"><span class="bot-eye"></span><span class="bot-eye"></span></div>
+                    <div class="bot-body"></div>
+                    <div class="bot-glow"></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="quick-grid" aria-label="Quick links">
+            <a class="quick-card" href="/events">
+                <span class="quick-icon" aria-hidden="true">✦</span>
+                <span>
+                    <h3>Discover events</h3>
+                    <p>Find a new challenge and see what the community is building.</p>
+                </span>
+            </a>
+            <a class="quick-card" href="/evaluation">
+                <span class="quick-icon" aria-hidden="true">↗</span>
+                <span>
+                    <h3>Track your progress</h3>
+                    <p>Review your submissions, results, and organizer feedback.</p>
+                </span>
+            </a>
+            <a class="quick-card" href="/profile">
+                <span class="quick-icon" aria-hidden="true">◎</span>
+                <span>
+                    <h3>Make it yours</h3>
+                    <p>Update your profile so teammates know who you are.</p>
+                </span>
+            </a>
+        </section>
+
+        {% if user.role == "admin" %}
+        <section class="section-heading">
+            <h2>For organizers</h2>
+            <a href="/admin">Open organizer tools ↗</a>
+        </section>
+        <div class="organizer-note">
+            <strong>Bring your next event to life.</strong>
+            Create events, curate coding or file-submission challenges, manage test cases, and review participant progress from the organizer dashboard.
+        </div>
+        {% endif %}
+    </main>
+</body>
+
+</html>
