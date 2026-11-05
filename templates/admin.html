@@ -79,10 +79,10 @@
                             <span class="event-state state-{{ e.lifecycle_state }}">{{ e.lifecycle_state | capitalize }}</span>
                         </div>
                         <div class="event-actions">
-                            {% if e.lifecycle_state == "draft" %}
+                            {% if e.lifecycle_state in ("draft", "ended") %}
                             <form method="post" action="/admin/events/{{ e._id }}/start"
-                                onsubmit="return confirm('Start this competition now? Participants will be able to join.')">
-                                <button class="event-action start-event" type="submit">Start event</button>
+                                onsubmit="return confirm('{% if e.lifecycle_state == "ended" %}Restarting lets participants join with a fresh timer. Existing submissions and scores will be kept. Continue?{% else %}Start this competition now? Participants will be able to join.{% endif %}')">
+                                <button class="event-action start-event" type="submit">{% if e.lifecycle_state == "ended" %}Restart event{% else %}Start event{% endif %}</button>
                             </form>
                             {% elif e.lifecycle_state == "active" %}
                             <form method="post" action="/admin/events/{{ e._id }}/end"

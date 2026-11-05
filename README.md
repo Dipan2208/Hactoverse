@@ -35,7 +35,7 @@ On a fresh database, sign in with the configured organizer account, create the e
 
 ### Organize
 
-Sign in using the configured organizer account, open **Organizer**, then choose **Settings** beside an event to edit its start/end dates and participant contest timer (1–1440 minutes; 45 minutes by default). Use **Start event** to let participants in on or after the scheduled start date, and **End event** to close an active competition immediately. Choose **Manage** to add or edit code questions and configure sample and hidden test cases. Automatic submissions and scores appear in **My progress / Evaluations**.
+Sign in using the configured organizer account, open **Organizer**, then choose **Settings** beside an event to edit its start/end dates and participant contest timer (1–1440 minutes; 45 minutes by default). Use **Start event** to let participants in on or after the scheduled start date, and **End event** to close an active competition immediately. Ended events can be restarted during their scheduled date range; update the dates in Settings first if the schedule has passed. Restarting gives participants a fresh timer but keeps existing submissions and scores. Choose **Manage** to add or edit code questions and configure sample and hidden test cases. Automatic submissions and scores appear in **My progress / Evaluations**.
 
 This is a local preview, not a public deployment. A dedicated Docker-isolated runner is required for code execution. Before public deployment, configure a production host and database, use protected secrets, and review the runner and deployment security.
 

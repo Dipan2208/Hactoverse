@@ -100,8 +100,8 @@ def problem_category(problem):
         return "java" if category != "sorting" else "sorting"
     return "sorting" if problem.get("problem_type") == "code" else "java"
 
-def contest_started_at(event_id):
-    key = f"contest_started_{event_id}"
+def contest_started_at(event_id, run_number):
+    key = f"contest_started_{event_id}_{run_number}"
     raw = session.get(key)
     if raw:
         try:
@@ -143,8 +143,9 @@ def event_is_open(event):
     return event_date(event["start_date"]) <= today <= event_date(event["end_date"])
 
 def contest_status(event_id):
-    started = contest_started_at(event_id)
     event = mongo.db.events.find_one({"_id": to_object_id(event_id)})
+    run_number = event.get("run_number", 0) if event else 0
+    started = contest_started_at(event_id, run_number)
     duration_minutes = int(event.get("contest_duration_minutes", CONTEST_DURATION_MINUTES)) if event else CONTEST_DURATION_MINUTES
     if not 1 <= duration_minutes <= 1440:
         app.logger.error("Invalid contest duration for event %s; using the 45-minute default", event_id)
@@ -350,23 +351,29 @@ def start_event(event_id):
         flash("Event not found")
         return redirect(url_for("admin"))
 
-    if event_lifecycle_state(event) != "draft":
-        flash("Only an event that has not started can be started")
+    state = event_lifecycle_state(event)
+    if state not in {"draft", "ended"}:
+        flash("Only a draft or ended event can be started")
         return redirect(url_for("admin"))
     today = date.today()
     if today < event_date(event["start_date"]) or today > event_date(event["end_date"]):
-        flash("The event can only be started between its scheduled start and end dates")
+        flash("The event can only be started between its scheduled dates. Update its settings to change the dates.")
         return redirect(url_for("admin"))
 
+    allowed_states = [{"status": state}]
+    if state == "draft":
+        allowed_states.append({"status": {"$exists": False}})
     result = mongo.db.events.update_one(
-        {"_id": event_oid, "$or": [{"status": "draft"}, {"status": {"$exists": False}}]},
+        {"_id": event_oid, "$or": allowed_states},
         {"$set": {"status": "active", "started_at": datetime.now()},
+         "$inc": {"run_number": 1},
          "$unset": {"ended_at": ""}}
     )
     if result.modified_count != 1:
         flash("The event state changed before it could be started. Refresh and try again.")
     else:
-        flash("Event started. Participants can now join.")
+        flash("Event started again. Participants can now join." if state == "ended"
+              else "Event started. Participants can now join.")
     return redirect(url_for("admin"))
 
 @app.route("/admin/events/<event_id>/end", methods=["POST"])
