@@ -11,8 +11,6 @@ from datetime import datetime, date, timedelta
 from bson.objectid import ObjectId
 from bson.errors import InvalidId
 
-import judge
-
 # Load a local .env file if present (python-dotenv). This only affects local
 # dev - on Render/Railway/Heroku/Vercel you set these in the platform's own
 # env var settings instead, and this call is a harmless no-op there since
@@ -22,6 +20,8 @@ try:
     load_dotenv()
 except ImportError:
     pass
+
+import judge
 
 # ================== APP CONFIG ================== #
 
@@ -68,7 +68,7 @@ if os.environ.get("VERCEL"):
 else:
     app.config["UPLOAD_FOLDER"] = "uploads"
 app.config["MAX_CONTENT_LENGTH"] = 20 * 1024 * 1024  # 20MB hard limit
-# Code execution stays opt-in and requires the dedicated Docker runner image.
+# Code execution stays opt-in and requires a configured isolated runner.
 CODE_EXECUTION_ENABLED = os.environ.get("CODE_EXECUTION_ENABLED", "").lower() in {"1", "true", "yes"}
 
 mongo = PyMongo(app)
@@ -745,7 +745,7 @@ def api_run(problem_id):
     if contest_status(problem["event_id"])["remaining_seconds"] <= 0:
         return jsonify({"error": "Your contest timer has ended."}), 403
     if not code_runner_enabled():
-        return jsonify({"error": "Code execution is disabled. Start Docker and configure the isolated runner image."}), 503
+        return jsonify({"error": "Code execution is disabled or no runner is configured."}), 503
 
     data = request.get_json(silent=True)
     if not isinstance(data, dict):
@@ -763,7 +763,7 @@ def api_run(problem_id):
         return jsonify({"error": str(error)}), 400
     except judge.RunnerUnavailable as error:
         app.logger.error("Isolated code runner unavailable: %s", error)
-        return jsonify({"error": "The isolated code runner is unavailable. Check Docker and the runner image."}), 503
+        return jsonify({"error": "The isolated code runner is unavailable. Check its configuration and service status."}), 503
     event = mongo.db.events.find_one({"_id": to_object_id(problem["event_id"])})
     if not event or not event_is_open(event):
         return jsonify({"error": "This event ended while your code was running; the result was not saved."}), 403
@@ -786,7 +786,7 @@ def api_submit_code(problem_id):
     if contest_status(problem["event_id"])["remaining_seconds"] <= 0:
         return jsonify({"error": "Your contest timer has ended."}), 403
     if not code_runner_enabled():
-        return jsonify({"error": "Code execution is disabled. Start Docker and configure the isolated runner image."}), 503
+        return jsonify({"error": "Code execution is disabled or no runner is configured."}), 503
 
     data = request.get_json(silent=True)
     if not isinstance(data, dict):
@@ -813,7 +813,7 @@ def api_submit_code(problem_id):
         return jsonify({"error": str(error)}), 400
     except judge.RunnerUnavailable as error:
         app.logger.error("Isolated code runner unavailable: %s", error)
-        return jsonify({"error": "The isolated code runner is unavailable. Check Docker and the runner image."}), 503
+        return jsonify({"error": "The isolated code runner is unavailable. Check its configuration and service status."}), 503
     event = mongo.db.events.find_one({"_id": to_object_id(problem["event_id"])})
     if not event or not event_is_open(event):
         return jsonify({"error": "This event ended while grading; the result was not saved."}), 403

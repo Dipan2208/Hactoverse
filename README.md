@@ -13,7 +13,7 @@ Hacktoverse is a hackathon and coding-event platform for students and organizers
 
 ### Code execution
 
-Code questions use a Docker-isolated runner for custom runs and automatic test-case grading. Execution is disabled by default; the editor remains available and saves drafts in the browser. Do not enable execution unless Docker is running and the dedicated runner image is built. The runner has no network access, host mounts, Linux capabilities, or writable root filesystem, and is subject to container resource limits. Keep the runner image and Docker daemon patched; this local setup is not a substitute for a reviewed production sandbox.
+Code questions use an isolated runner for custom runs and automatic test-case grading. Execution is disabled by default; the editor remains available and saves drafts in the browser. Local development uses the dedicated Docker runner image. Vercel deployments can use the Judge0 CE API backend; Vercel itself cannot run the local Docker-based runner. Both backends enforce execution limits, but review provider limits and security before enabling public submissions.
 
 ### Hacktoverse Algorithm Sprint — Demo
 
@@ -37,7 +37,7 @@ On a fresh database, sign in with the configured organizer account, create the e
 
 Sign in using the configured organizer account, open **Organizer**, then choose **Settings** beside an event to edit its start/end dates and participant contest timer (1–1440 minutes; 45 minutes by default). Use **Start event** to let participants in on or after the scheduled start date, and **End event** to close an active competition immediately. Ended events can be restarted during their scheduled date range; update the dates in Settings first if the schedule has passed. Restarting gives participants a fresh timer but keeps existing submissions and scores. Choose **Manage** to add or edit code questions and configure sample and hidden test cases. Automatic submissions and scores appear in **My progress / Evaluations**.
 
-This is a local preview, not a public deployment. A dedicated Docker-isolated runner is required for code execution. Before public deployment, configure a production host and database, use protected secrets, and review the runner and deployment security.
+The local configuration is a development preview. Before public deployment, configure a production host and database, use protected secrets, and review the selected code-runner provider and deployment security.
 
 ## Run locally on Windows
 
@@ -66,7 +66,7 @@ python app.py
 
 Open [http://127.0.0.1:5000](http://127.0.0.1:5000). To use local MongoDB, set `MONGO_URI=mongodb://localhost:27017/DevHost`. The app creates an organizer account from the `ADMIN_EMAIL` and `ADMIN_PASSWORD` values when that account does not already exist. If those values are absent, no default administrator is created. If your database predates this update, the old `admin` / default-password login is blocked; configure a new organizer account before deployment.
 
-To enable code execution, start Docker Desktop and build the dedicated runner image from the project folder:
+To enable local code execution, start Docker Desktop and build the dedicated runner image from the project folder:
 
 ```powershell
 docker build -f runner.Dockerfile -t hacktoverse-runner:local .
@@ -83,9 +83,21 @@ The app only enables **Run Code** and automatic grading when the setting is enab
 
 ## Deployment notes
 
-Set `SECRET_KEY`, `MONGO_URI`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `CODE_EXECUTION_ENABLED`, and `RUNNER_IMAGE` in the hosting provider's environment settings. Never commit `.env` or credentials. Build and secure the isolated runner image on the host before enabling code execution; do not expose the Flask development server directly to the public internet.
+Set `SECRET_KEY`, `MONGO_URI`, `ADMIN_EMAIL`, and `ADMIN_PASSWORD` in the hosting provider's environment settings. Never commit `.env` or credentials. Do not expose the Flask development server directly to the public internet.
 
 On Vercel, `vercel.json` builds the `static/` assets alongside the Flask app. Redeploy after changing this configuration.
+
+### Enable code execution on Vercel with Judge0
+
+Vercel cannot run Docker containers for the current local runner. To enable execution, subscribe to Judge0 CE on RapidAPI and set these Vercel Production environment variables:
+
+```text
+CODE_EXECUTION_ENABLED=1
+CODE_RUNNER_BACKEND=judge0
+JUDGE0_API_KEY=<your RapidAPI key>
+```
+
+The integration calls `https://judge0-ce.p.rapidapi.com`, submits code and test inputs in batches, and polls for completion, with a 55-second request limit. Judge0/RapidAPI will receive participant source code and test inputs, including hidden test inputs. Keep the API key only in Vercel's environment variables, never in the browser or repository. Check your Judge0 plan and Vercel function limits before enabling public submissions. Redeploy after setting these values. Keep `CODE_EXECUTION_ENABLED=0` until the provider is configured and tested.
 
 Uploaded files are stored on the app's local filesystem by default. Choose persistent storage or an object-storage service before relying on uploaded submissions in a deployment where local files may be ephemeral.
 
