@@ -85,6 +85,8 @@ The app only enables **Run Code** and automatic grading when the setting is enab
 
 Set `SECRET_KEY`, `MONGO_URI`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `CODE_EXECUTION_ENABLED`, and `RUNNER_IMAGE` in the hosting provider's environment settings. Never commit `.env` or credentials. Build and secure the isolated runner image on the host before enabling code execution; do not expose the Flask development server directly to the public internet.
 
+On Vercel, `vercel.json` builds the `static/` assets alongside the Flask app. Redeploy after changing this configuration.
+
 Uploaded files are stored on the app's local filesystem by default. Choose persistent storage or an object-storage service before relying on uploaded submissions in a deployment where local files may be ephemeral.
 
 ## Stack
